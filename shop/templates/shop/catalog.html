@@ -36,7 +36,7 @@
             {% for category in categories %}
               <option
                 value="{{ category.id }}"
-                {% if category.id|stringformat:"s" == request.GET.category %}selected{% endif %}
+                {% if category.id == current_category_id %}selected{% endif %}
               >
                 {{ category.name }}
               </option>
@@ -50,7 +50,7 @@
             type="text"
             name="q"
             class="form-control"
-            value="{{ request.GET.q }}"
+            value="{{ search_query }}"
             placeholder="Название или описание"
           >
         </div>
@@ -118,6 +118,34 @@
         {% endfor %}
       </div>
     </section>
+
+    {% if page_obj and page_obj.paginator.num_pages > 1 %}
+      <nav aria-label="Навигация по страницам" class="mt-4">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}&category={{ current_category_id|default_if_none:'' }}&q={{ search_query }}">Предыдущая</a>
+            </li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">Предыдущая</span></li>
+          {% endif %}
+
+          {% for page in page_obj.paginator.page_range %}
+            <li class="page-item {% if page == page_obj.number %}active{% endif %}">
+              <a class="page-link" href="?page={{ page }}&category={{ current_category_id|default_if_none:'' }}&q={{ search_query }}">{{ page }}</a>
+            </li>
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}&category={{ current_category_id|default_if_none:'' }}&q={{ search_query }}">Следующая</a>
+            </li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">Следующая</span></li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
   {% else %}
     <div class="catalog-empty mt-3">
       <span>

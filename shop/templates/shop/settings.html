@@ -2,20 +2,35 @@
 {% block title %}Настройки пользователя · Ашан{% endblock %}
 
 {% block content %}
-<h3 class="mb-3">Настройки пользователя</h3>
-
-<form method="post" class="card p-3">
-  {% csrf_token %}
-  {{ form.non_field_errors }}
-  {% for field in form %}
-    <div class="mb-3">
-      <label class="form-label">{{ field.label }}</label>
-      {{ field }}
-      {% for error in field.errors %}
-        <div class="text-danger small">{{ error }}</div>
-      {% endfor %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-soft settings-card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <div>
+          <h5 class="mb-1">Настройки интерфейса</h5>
+          <p class="text-muted mb-0 small">Тема, язык, формат дат и размер страниц сохраняются для вашего аккаунта.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <form method="post" class="row g-3">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          {% for field in form %}
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">{{ field.label }}</label>
+              {{ field }}
+              <div class="form-text">{{ field.help_text }}</div>
+              {% for error in field.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+          <div class="col-12 d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary px-4">Сохранить</button>
+          </div>
+        </form>
+      </div>
     </div>
-  {% endfor %}
-  <button type="submit" class="btn btn-primary">Сохранить</button>
-</form>
+  </div>
+</div>
 {% endblock %}

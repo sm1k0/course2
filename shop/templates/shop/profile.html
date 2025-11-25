@@ -1,4 +1,5 @@
 {% extends 'shop/base.html' %}
+{% load shop_extras %}
 {% block title %}Личный кабинет · Ашан{% endblock %}
 
 {% block content %}
@@ -36,7 +37,7 @@
                   <td>{{ order.id }}</td>
                   <td>{{ order.get_status_display }}</td>
                   <td>{{ order.total_amount }} ₽</td>
-                  <td>{{ order.created_at|date:'d.m.Y H:i' }}</td>
+                  <td>{{ order.created_at|format_date:user_settings }}</td>
                 </tr>
                 {% endfor %}
               </tbody>
