@@ -6,13 +6,37 @@
   --brand-light: #f8f9fa;
 }
 
+/* БАЗОВАЯ ВЁРСТКА И ФУТЕР ВНИЗУ */
+
+html,
+body {
+  height: 100%;
+}
+
 body {
   background: linear-gradient(180deg, #fdfdfd 0%, #f3f6fb 100%);
   min-height: 100vh;
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   color: #1f2d3d;
   padding-top: 72px;
+  display: flex;
+  flex-direction: column;
 }
+
+main {
+  flex: 1 0 auto;
+}
+
+footer {
+  flex-shrink: 0;
+  background-color: var(--brand-dark);
+  color: #dce6f2;
+  font-size: 0.9rem;
+  padding: 16px 0;
+  margin-top: 48px;
+}
+
+/* НАВБАР */
 
 .navbar {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -21,26 +45,45 @@ body {
 
 .navbar-brand {
   font-weight: 700;
-  color: var(--brand-primary);
+  color: var(--brand-primary) !important;
+}
+
+.navbar-brand span {
+  color: #111827;
 }
 
 .nav-link {
   font-weight: 500;
-  color: #324a5f;
+  color: #324a5f !important;
 }
 
 .nav-link:hover,
 .nav-link:focus {
-  color: var(--brand-primary);
+  color: var(--brand-primary) !important;
 }
 
-.btn-primary {
+.navbar .btn-outline-danger,
+.navbar .btn-outline-primary {
+  border-radius: 999px;
+  padding-inline: 18px;
+  font-weight: 500;
+}
+
+/* КНОПКИ */
+
+.btn-primary,
+.btn-danger {
   background-color: var(--brand-primary);
   border-color: var(--brand-primary);
+  border-radius: 999px;
+  font-weight: 600;
+  padding-inline: 20px;
 }
 
 .btn-primary:hover,
-.btn-primary:focus {
+.btn-primary:focus,
+.btn-danger:hover,
+.btn-danger:focus {
   background-color: #b71d1d;
   border-color: #b71d1d;
 }
@@ -48,12 +91,21 @@ body {
 .btn-outline-primary {
   color: var(--brand-primary);
   border-color: var(--brand-primary);
+  border-radius: 999px;
+  font-weight: 600;
 }
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: rgba(214, 40, 40, 0.05);
+}
+
+/* КАРТОЧКИ И ПАНЕЛИ */
 
 .card {
   border: none;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.05);
-  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  border-radius: 14px;
 }
 
 .card-header {
@@ -62,27 +114,143 @@ body {
   font-weight: 600;
 }
 
-footer {
-  background-color: var(--brand-dark);
-  color: #dce6f2;
-  font-size: 0.9rem;
-  padding: 16px 0;
-  margin-top: 48px;
-}
+/* HERO БЛОК В КАТАЛОГЕ */
 
 .hero {
-  background: linear-gradient(135deg, rgba(214, 40, 40, 0.1), rgba(42, 157, 143, 0.15));
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
+  background: radial-gradient(circle at top left, rgba(214, 40, 40, 0.12), transparent 55%),
+              radial-gradient(circle at bottom right, rgba(42, 157, 143, 0.12), transparent 55%),
+              #ffffff;
+  border-radius: 18px;
+  padding: 28px 28px;
+  margin: 24px 0;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.badge-accent {
-  background-color: var(--brand-accent);
+.hero-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hero-title {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.hero-subtitle {
+  margin: 0;
+  color: #64748b;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.hero-actions .btn {
+  min-width: 190px;
+}
+
+/* ПАНЕЛЬ ФИЛЬТРОВ */
+
+.filters-panel {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 18px 18px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.05);
+  margin-bottom: 20px;
+}
+
+.filters-panel .form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.form-control,
+.form-select {
+  border-radius: 10px;
+  border-color: #dfe7f3;
+  font-size: 0.95rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 1px rgba(214, 40, 40, 0.15);
+}
+
+/* СЕТКА ТОВАРОВ */
+
+.product-grid {
+  margin-top: 8px;
+}
+
+.product-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.product-thumb {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px 14px 0 0;
+  background: #f9fafb;
+}
+
+.product-thumb img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.25s ease-out;
+}
+
+.product-card:hover .product-thumb img {
+  transform: scale(1.03);
+}
+
+.product-category {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.product-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.product-meta {
+  font-size: 0.85rem;
+  color: #6b7280;
 }
 
 .product-card .price {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--brand-primary);
 }
@@ -93,16 +261,52 @@ footer {
   font-size: 0.9rem;
 }
 
-.form-control,
-.form-select {
-  border-radius: 10px;
-  border-color: #dfe7f3;
+.product-card .card-footer {
+  background-color: transparent;
+  border-top: 1px solid #eef2f7;
 }
+
+/* ПУСТОЙ СОСТОЯНИЕ КАТАЛОГА */
+
+.catalog-empty {
+  background: #e0f2fe;
+  border-radius: 10px;
+  padding: 14px 18px;
+  color: #0f172a;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* ТАБЛИЦЫ (история заказов, отчёты и т.п.) */
 
 .table thead th {
   background-color: #f1f5fb;
   border-bottom: 2px solid #e5ecf6;
 }
+
+.table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* FOOTER */
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footer-inner span {
+  opacity: 0.9;
+}
+
+/* ADAPTIVE */
 
 @media (max-width: 991px) {
   .navbar-collapse {
@@ -111,11 +315,27 @@ footer {
     border-radius: 12px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
   }
+
+  .hero {
+    padding: 20px 16px;
+  }
 }
 
 @media (max-width: 767px) {
   body {
     padding-top: 64px;
+  }
+
+  .hero-header {
+    align-items: flex-start;
+  }
+
+  .hero-actions {
+    width: 100%;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
   }
 
   .product-card {

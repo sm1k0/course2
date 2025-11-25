@@ -1,65 +1,129 @@
-{% extends 'shop/base.html' %}
-{% block title %}Каталог · Ашан{% endblock %}
+{% extends "shop/base.html" %}
+
+{% block title %}Каталог — Ашан OMS{% endblock %}
 
 {% block content %}
-<div class="hero">
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-    <div>
-      <h2 class="mb-2">Онлайн-магазин Ашан</h2>
-      <p class="mb-0 text-muted">Каталог товаров, поиск и быстрый доступ с горячими клавишами.</p>
-    </div>
-    <a class="btn btn-outline-primary mt-3 mt-md-0" href="{% url 'shop:cart' %}">Перейти в корзину</a>
-  </div>
-</div>
 
-<form method="get" class="row g-3 align-items-end mb-4">
-  <div class="col-md-4">
-    <label class="form-label">Категория</label>
-    <select name="category" class="form-select">
-      <option value="">Все категории</option>
-      {% for category in categories %}
-        <option value="{{ category.id }}" {% if current_category_id == category.id %}selected{% endif %}>{{ category.name }}</option>
-      {% endfor %}
-    </select>
-  </div>
-  <div class="col-md-4">
-    <label class="form-label">Поиск</label>
-    <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Название или описание">
-  </div>
-  <div class="col-md-4 d-flex gap-2">
-    <button type="submit" class="btn btn-primary">Найти</button>
-    <a href="{% url 'shop:catalog' %}" class="btn btn-light">Сбросить</a>
-  </div>
-</form>
-
-<div class="row g-4">
-  {% for product in products %}
-    <div class="col-sm-6 col-lg-4">
-      <div class="card product-card h-100">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">{{ product.name }}</h5>
-          <p class="text-muted small mb-2">Артикул: {{ product.sku }}</p>
-          <p class="mb-3">Категория: {{ product.category.name }}</p>
-          <div class="mb-3">
-            {% if product.discount_percent %}
-              <div class="old-price">{{ product.price }} ₽</div>
-            {% endif %}
-            <div class="price">{{ product.final_price }} ₽</div>
-          </div>
-          <div class="mt-auto d-flex gap-2">
-            <a class="btn btn-outline-secondary" href="{% url 'shop:product_detail' product.id %}">Подробнее</a>
-            <form method="post" action="{% url 'shop:cart_add' product.id %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-primary">В корзину</button>
-            </form>
-          </div>
+  {# HERO-БЛОК #}
+  <section class="hero mt-3">
+    <div class="hero-header">
+      <div>
+        <div class="hero-badge">
+          Онлайн • Быстрая доставка
         </div>
+        <h1 class="hero-title mt-2">Онлайн-магазин Ашан</h1>
+        <p class="hero-subtitle">
+          Каталог товаров, поиск и быстрый доступ к корзине. Удобно для кассиров, менеджеров и покупателей.
+        </p>
+      </div>
+
+      <div class="hero-actions">
+        <a href="{% url 'shop:cart' %}" class="btn btn-danger btn-lg">
+          Перейти в корзину
+        </a>
       </div>
     </div>
-  {% empty %}
-    <div class="col-12">
-      <div class="alert alert-info">Товары не найдены. Попробуйте изменить фильтры.</div>
+  </section>
+
+  {# ПАНЕЛЬ ФИЛЬТРОВ #}
+  <section class="filters-panel">
+    <form method="get">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label">Категория</label>
+          <select name="category" class="form-select">
+            <option value="">Все категории</option>
+            {% for category in categories %}
+              <option
+                value="{{ category.id }}"
+                {% if category.id|stringformat:"s" == request.GET.category %}selected{% endif %}
+              >
+                {{ category.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-5">
+          <label class="form-label">Поиск</label>
+          <input
+            type="text"
+            name="q"
+            class="form-control"
+            value="{{ request.GET.q }}"
+            placeholder="Название или описание"
+          >
+        </div>
+
+        <div class="col-md-3 d-flex gap-2">
+          <button type="submit" class="btn btn-danger flex-fill">
+            Найти
+          </button>
+          <a href="{% url 'shop:catalog' %}" class="btn btn-outline-secondary flex-fill">
+            Сбросить
+          </a>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  {# СЕТКА ТОВАРОВ #}
+  {% if products %}
+    <section class="product-grid mt-3">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for product in products %}
+          <div class="col">
+            <div class="card product-card h-100">
+              <div class="product-thumb">
+                {% if product.image %}
+                  <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                  <img src="https://via.placeholder.com/400x250?text=Нет+фото" alt="{{ product.name }}">
+                {% endif %}
+              </div>
+
+              <div class="card-body">
+                <div class="product-category">
+                  {{ product.category.name|default:"Без категории" }}
+                </div>
+                <div class="product-title">
+                  {{ product.name }}
+                </div>
+                {% if product.description %}
+                  <div class="product-meta">
+                    {{ product.description|truncatechars:90 }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="card-footer d-flex justify-content-between align-items-center">
+                <div>
+                  <span class="price">
+                    {{ product.price }} ₽
+                  </span>
+                  {% if product.old_price %}
+                    <span class="old-price ms-1">
+                      {{ product.old_price }} ₽
+                    </span>
+                  {% endif %}
+                </div>
+
+                {# тут можно позже повесить добавление в корзину #}
+                <button type="button" class="btn btn-outline-primary btn-sm" disabled>
+                  В корзину
+                </button>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% else %}
+    <div class="catalog-empty mt-3">
+      <span>
+        Товары не найдены. Попробуйте изменить фильтры или поиск.
+      </span>
     </div>
-  {% endfor %}
-</div>
+  {% endif %}
+
 {% endblock %}
