@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models import F, Value
 from django.db.models.functions import Coalesce
 from accounts.models import UserSettings
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
@@ -71,6 +72,15 @@ def catalog_view(request):
     category_id = request.GET.get('category')
     search = request.GET.get('q')
 
+    settings_obj = None
+    if request.user.is_authenticated:
+        settings_obj, _ = UserSettings.objects.get_or_create(user=request.user)
+
+    saved_filters = getattr(settings_obj, 'saved_filters', {}) if settings_obj else {}
+    if not category_id and not search and saved_filters:
+        category_id = saved_filters.get('category')
+        search = saved_filters.get('q')
+
     categories = Category.objects.all()
     products = Product.objects.filter(is_active=True).select_related('category', 'supplier')
 
@@ -79,12 +89,29 @@ def catalog_view(request):
     if search:
         products = products.filter(name__icontains=search)
 
+    if settings_obj is not None:
+        settings_obj.saved_filters = {
+            'category': category_id or '',
+            'q': search or '',
+        }
+        settings_obj.save(update_fields=['saved_filters'])
+
     cart = _get_cart(request)
     cart_items, cart_total = _cart_items(cart)
 
+    page_size = 12
+    if settings_obj:
+        if 5 <= settings_obj.page_size <= 100:
+            page_size = settings_obj.page_size
+
+    paginator = Paginator(products, page_size)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
         'categories': categories,
-        'products': products,
+        'products': page_obj,
+        'page_obj': page_obj,
         'current_category_id': int(category_id) if category_id else None,
         'search_query': search or '',
         'cart_total': cart_total,
