@@ -1,0 +1,158 @@
+{% extends 'shop/base.html' %}
+{% block title %}Аналитика · Ашан{% endblock %}
+
+{% block content %}
+<h3 class="mb-3">Аналитика и отчёты</h3>
+
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">Продажи по дням</div>
+      <div class="card-body">
+        <canvas id="salesDailyChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">Продажи по категориям</div>
+      <div class="card-body">
+        <canvas id="salesByCategoryChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">Остатки на складе</div>
+      <div class="card-body">
+        <canvas id="stockChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-4 d-flex gap-2">
+  <a href="{% url 'shop:export_sales_daily_csv' %}" class="btn btn-outline-primary btn-sm">
+    Экспорт продаж по дням (CSV)
+  </a>
+  <a href="{% url 'shop:export_products_csv' %}" class="btn btn-outline-secondary btn-sm">
+    Экспорт товаров (CSV)
+  </a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const salesDailyUrl = "{{ sales_daily_url }}";
+  const salesByCategoryUrl = "{{ sales_by_category_url }}";
+  const stockUrl = "{{ stock_url }}";
+
+  const fetchJson = async (url) => {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`Не удалось загрузить ${url}: ${res.status}`);
+    }
+    return res.json();
+  };
+
+  const renderSalesDaily = (data) => {
+    const ctx = document.getElementById('salesDailyChart');
+    const labels = data.map((item) => item.date);
+    const totals = data.map((item) => item.total_amount);
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Сумма продаж',
+            data: totals,
+            fill: false,
+            borderColor: '#0d6efd',
+            tension: 0.2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true },
+        },
+      },
+    });
+  };
+
+  const renderSalesByCategory = (data) => {
+    const ctx = document.getElementById('salesByCategoryChart');
+    const labels = data.map((item) => item.category_name);
+    const totals = data.map((item) => item.total_amount);
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Сумма продаж',
+            data: totals,
+            backgroundColor: '#198754',
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+        },
+      },
+    });
+  };
+
+  const renderStock = (data) => {
+    const ctx = document.getElementById('stockChart');
+    const labels = data.map((item) => `${item.product_name} (${item.sku})`);
+    const quantities = data.map((item) => item.quantity);
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Остаток',
+            data: quantities,
+            backgroundColor: '#ffc107',
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+  };
+
+  try {
+    const [salesDaily, salesByCategory, stock] = await Promise.all([
+      fetchJson(salesDailyUrl),
+      fetchJson(salesByCategoryUrl),
+      fetchJson(stockUrl),
+    ]);
+
+    renderSalesDaily(salesDaily || []);
+    renderSalesByCategory(salesByCategory || []);
+    renderStock(stock || []);
+  } catch (err) {
+    console.error('Ошибка загрузки отчётов', err);
+  }
+});
+</script>
+{% endblock %}
