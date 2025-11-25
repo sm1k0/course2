@@ -10,6 +10,11 @@ class LoginForm(forms.Form):
     username = forms.CharField(label='Логин')
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.setdefault('class', 'form-control')
+
     def clean(self):
         cleaned_data = super().clean()
         user = authenticate(
@@ -31,6 +36,14 @@ class RegisterForm(forms.Form):
     full_name = forms.CharField(label='ФИО', max_length=255)
     phone = forms.CharField(label='Телефон', max_length=32)
     address = forms.CharField(label='Адрес доставки', widget=forms.Textarea, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            base_class = 'form-control'
+            if name in {'address'}:
+                field.widget.attrs.setdefault('rows', 3)
+            field.widget.attrs.setdefault('class', base_class)
 
     def clean_username(self):
         username = self.cleaned_data['username']
@@ -73,10 +86,25 @@ class RegisterForm(forms.Form):
             default_address=data.get('address', ''),
         )
 
-        UserSettings.objects.create(
+        UserSettings.objects.get_or_create(
             user=user,
-            theme=UserSettings.Theme.LIGHT,
-            language='ru',
+            defaults={
+                'theme': UserSettings.Theme.LIGHT,
+                'language': 'ru',
+                'date_format': UserSettings.DateFormat.DMY,
+                'page_size': UserSettings.PageSize.MEDIUM,
+            },
         )
 
         return user
+
+
+class UserSettingsForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            field.widget.attrs.setdefault('class', 'form-select' if name in {'theme', 'language', 'date_format', 'page_size'} else 'form-control')
+
+    class Meta:
+        model = UserSettings
+        fields = ['theme', 'language', 'date_format', 'page_size']

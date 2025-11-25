@@ -8,7 +8,6 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import models
 from django.db.models import F, Value
 from django.db.models.functions import Coalesce
-from django import forms
 from accounts.models import UserSettings
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -17,7 +16,7 @@ from django.views.decorators.http import require_POST
 
 from catalog.models import Product, Category, Stock
 from orders.models import Order, OrderItem
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm, UserSettingsForm
 
 
 # ====== Вспомогательные функции для корзины ======
@@ -361,12 +360,6 @@ def reports_view(request):
         'stock_url': '/api/reports/stock/',
     }
     return render(request, 'shop/reports.html', context)
-
-
-class UserSettingsForm(forms.ModelForm):
-    class Meta:
-        model = UserSettings
-        fields = ['theme', 'language', 'date_format', 'page_size']
 
 
 @login_required

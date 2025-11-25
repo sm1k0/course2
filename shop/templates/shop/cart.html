@@ -1,0 +1,48 @@
+{% extends 'shop/base.html' %}
+{% block title %}Корзина · Ашан{% endblock %}
+
+{% block content %}
+<h3 class="mb-3">Корзина</h3>
+{% if items %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Товар</th>
+          <th class="text-center">Кол-во</th>
+          <th class="text-end">Сумма</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>
+            <div class="fw-semibold">{{ item.product.name }}</div>
+            <div class="text-muted small">{{ item.product.category.name }}</div>
+          </td>
+          <td class="text-center">{{ item.quantity }}</td>
+          <td class="text-end">{{ item.line_total }} ₽</td>
+          <td class="text-end">
+            <form method="post" action="{%- url 'shop:cart_remove' item.product.id -%}" class="d-inline">
+              {% csrf_token %}
+              <button class="btn btn-sm btn-outline-secondary">Удалить</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="fs-5">Итого: <span class="fw-bold">{{ total }} ₽</span></div>
+    <div class="d-flex gap-2">
+      <a href="{%- url 'shop:catalog' -%}" class="btn btn-light">Продолжить покупки</a>
+      <a href="{%- url 'shop:checkout' -%}" class="btn btn-primary">Оформить заказ</a>
+    </div>
+  </div>
+{% else %}
+  <div class="alert alert-info">Ваша корзина пуста.</div>
+  <a class="btn btn-primary" href="{%- url 'shop:catalog' -%}">Вернуться в каталог</a>
+{% endif %}
+{% endblock %}
