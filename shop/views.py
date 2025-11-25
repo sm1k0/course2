@@ -1,9 +1,18 @@
 from decimal import Decimal
+import csv
+import io
 
 from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db import models
+from django.db.models import F, Value
+from django.db.models.functions import Coalesce
+from django import forms
+from accounts.models import UserSettings
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from catalog.models import Product, Category, Stock
@@ -266,3 +275,110 @@ def profile_view(request):
         'profile': profile,
         'orders': orders,
     })
+
+
+# ====== Отчёты, настройки, экспорт ======
+
+
+def is_admin_or_manager(user):
+    return bool(getattr(user, 'role', None) and user.role.code in ('ADMIN', 'MANAGER'))
+
+
+@user_passes_test(is_admin_or_manager)
+def export_products_csv(request):
+    products = (
+        Product.objects
+        .select_related('category')
+        .annotate(stock_quantity=Coalesce(F('stock__quantity'), Value(0)))
+        .order_by('name')
+    )
+
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow([
+        'id',
+        'name',
+        'sku',
+        'category',
+        'price',
+        'discount_percent',
+        'is_active',
+        'stock_quantity',
+    ])
+
+    for product in products:
+        writer.writerow([
+            product.id,
+            product.name,
+            product.sku,
+            product.category.name if product.category else '',
+            product.price,
+            product.discount_percent,
+            product.is_active,
+            product.stock_quantity,
+        ])
+
+    filename = f"products_{timezone.now().date()}.csv"
+    response = HttpResponse(buffer.getvalue(), content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+
+@user_passes_test(is_admin_or_manager)
+def export_sales_daily_csv(request):
+    sales = (
+        Order.objects
+        .filter(status=Order.Status.COMPLETED)
+        .values('created_at__date')
+        .annotate(
+            total_amount=models.Sum('total_amount'),
+            orders_count=models.Count('id'),
+        )
+        .order_by('created_at__date')
+    )
+
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(['date', 'total_amount', 'orders_count'])
+
+    for row in sales:
+        writer.writerow([
+            row['created_at__date'],
+            row['total_amount'],
+            row['orders_count'],
+        ])
+
+    filename = f"sales_daily_{timezone.now().date()}.csv"
+    response = HttpResponse(buffer.getvalue(), content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+
+def reports_view(request):
+    context = {
+        'sales_daily_url': '/api/reports/sales/daily/',
+        'sales_by_category_url': '/api/reports/sales/by-category/',
+        'stock_url': '/api/reports/stock/',
+    }
+    return render(request, 'shop/reports.html', context)
+
+
+class UserSettingsForm(forms.ModelForm):
+    class Meta:
+        model = UserSettings
+        fields = ['theme', 'language', 'date_format', 'page_size']
+
+
+@login_required
+def settings_view(request):
+    settings_obj, _ = UserSettings.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        form = UserSettingsForm(request.POST, instance=settings_obj)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Настройки успешно сохранены.')
+            return redirect('shop:settings')
+    else:
+        form = UserSettingsForm(instance=settings_obj)
+
+    return render(request, 'shop/settings.html', {'form': form})

@@ -125,6 +125,11 @@ class UserSettings(models.Model):
         DMY = 'd.m.Y', 'ДД.ММ.ГГГГ'
         YMD = 'Y-m-d', 'ГГГГ-ММ-ДД'
 
+    class PageSize(models.IntegerChoices):
+        SMALL = 10, '10'
+        MEDIUM = 20, '20'
+        LARGE = 50, '50'
+
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -147,6 +152,11 @@ class UserSettings(models.Model):
         choices=DateFormat.choices,
         default=DateFormat.DMY,
         verbose_name='Формат даты',
+    )
+    page_size = models.PositiveIntegerField(
+        choices=PageSize.choices,
+        default=PageSize.MEDIUM,
+        verbose_name='Размер страницы',
     )
 
     def __str__(self) -> str:

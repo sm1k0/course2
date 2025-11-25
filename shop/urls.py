@@ -18,3 +18,10 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),
     path('profile/', views.profile_view, name='profile'),
 ]
+
+urlpatterns += [
+    path('reports/', views.reports_view, name='reports'),
+    path('settings/', views.settings_view, name='settings'),
+    path('export/products/csv/', views.export_products_csv, name='export_products_csv'),
+    path('export/sales/daily/csv/', views.export_sales_daily_csv, name='export_sales_daily_csv'),
+]
