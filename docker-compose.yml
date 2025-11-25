@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:17
+    container_name: ashan_db
+    restart: always
+    environment:
+      POSTGRES_DB: ashan_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "1"
+    volumes:
+      - ashan_db_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: ashan_web
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DJANGO_SETTINGS_MODULE: ashan_oms.settings
+      DB_NAME: "ashan_db"
+      DB_USER: "postgres"
+      DB_PASSWORD: "1"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+    volumes:
+      - .:/app
+
+volumes:
+  ashan_db_data:
