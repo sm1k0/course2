@@ -24,7 +24,7 @@
           <td class="text-center">{{ item.quantity }}</td>
           <td class="text-end">{{ item.line_total }} ₽</td>
           <td class="text-end">
-            <form method="post" action="{%- url 'shop:cart_remove' item.product.id -%}" class="d-inline">
+            <form method="post" action="{% url 'shop:cart_remove' item.product.id %}" class="d-inline">
               {% csrf_token %}
               <button class="btn btn-sm btn-outline-secondary">Удалить</button>
             </form>
@@ -37,12 +37,12 @@
   <div class="d-flex justify-content-between align-items-center mt-3">
     <div class="fs-5">Итого: <span class="fw-bold">{{ total }} ₽</span></div>
     <div class="d-flex gap-2">
-      <a href="{%- url 'shop:catalog' -%}" class="btn btn-light">Продолжить покупки</a>
-      <a href="{%- url 'shop:checkout' -%}" class="btn btn-primary">Оформить заказ</a>
+      <a href="{% url 'shop:catalog' %}" class="btn btn-light">Продолжить покупки</a>
+      <a href="{% url 'shop:checkout' %}" class="btn btn-primary">Оформить заказ</a>
     </div>
   </div>
 {% else %}
   <div class="alert alert-info">Ваша корзина пуста.</div>
-  <a class="btn btn-primary" href="{%- url 'shop:catalog' -%}">Вернуться в каталог</a>
+  <a class="btn btn-primary" href="{% url 'shop:catalog' %}">Вернуться в каталог</a>
 {% endif %}
 {% endblock %}

@@ -1,0 +1,65 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+  <div class="container">
+    <a class="navbar-brand fw-semibold text-danger" href="{% url 'shop:catalog' %}">
+      Ашан OMS
+    </a>
+
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'shop:catalog' %}">Каталог</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'shop:profile' %}">Мои заказы</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'shop:settings' %}">Настройки</a>
+        </li>
+
+        {# ADMIN / MANAGER – пункт отчётов #}
+        {% if request.user.is_authenticated and request.user.role %}
+          {% if request.user.role.code == 'ADMIN' or request.user.role.code == 'MANAGER' %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'shop:reports' %}">Отчёты</a>
+            </li>
+          {% endif %}
+        {% endif %}
+      </ul>
+
+      <ul class="navbar-nav align-items-center gap-2">
+        <li class="nav-item">
+          <a class="btn btn-outline-danger" href="{% url 'shop:cart' %}">
+            Корзина
+          </a>
+        </li>
+
+        {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <span class="navbar-text me-1">
+              {{ request.user.username }}
+            </span>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="{% url 'accounts:logout' %}">Выход</a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="btn btn-light" href="{% url 'accounts:login' %}">Войти</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-danger" href="{% url 'accounts:register' %}">
+              Регистрация
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
