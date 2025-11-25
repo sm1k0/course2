@@ -13,7 +13,10 @@ urlpatterns = [
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
     # Публичный сайт
-    path('', include('shop.urls')),          # ← наш сайт
+    path('', include(('shop.urls', 'shop'), namespace='shop')),          # ← наш сайт
+
+    # Аутентификация
+    path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
 
     # REST API
     path('api/', include('api.urls')),

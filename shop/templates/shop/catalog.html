@@ -8,7 +8,7 @@
       <h2 class="mb-2">Онлайн-магазин Ашан</h2>
       <p class="mb-0 text-muted">Каталог товаров, поиск и быстрый доступ с горячими клавишами.</p>
     </div>
-    <a class="btn btn-outline-primary mt-3 mt-md-0" href="{%- url 'shop:cart' -%}">Перейти в корзину</a>
+    <a class="btn btn-outline-primary mt-3 mt-md-0" href="{% url 'shop:cart' %}">Перейти в корзину</a>
   </div>
 </div>
 
@@ -28,7 +28,7 @@
   </div>
   <div class="col-md-4 d-flex gap-2">
     <button type="submit" class="btn btn-primary">Найти</button>
-    <a href="{%- url 'shop:catalog' -%}" class="btn btn-light">Сбросить</a>
+    <a href="{% url 'shop:catalog' %}" class="btn btn-light">Сбросить</a>
   </div>
 </form>
 
@@ -47,8 +47,8 @@
             <div class="price">{{ product.final_price }} ₽</div>
           </div>
           <div class="mt-auto d-flex gap-2">
-            <a class="btn btn-outline-secondary" href="{%- url 'shop:product_detail' product.id -%}">Подробнее</a>
-            <form method="post" action="{%- url 'shop:cart_add' product.id -%}">
+            <a class="btn btn-outline-secondary" href="{% url 'shop:product_detail' product.id %}">Подробнее</a>
+            <form method="post" action="{% url 'shop:cart_add' product.id %}">
               {% csrf_token %}
               <button type="submit" class="btn btn-primary">В корзину</button>
             </form>

@@ -11,11 +11,11 @@
       <span class="badge bg-warning text-dark">Скидка {{ product.discount_percent }}%</span>
     {% endif %}
     <div class="mt-4 d-flex gap-2">
-      <form method="post" action="{%- url 'shop:cart_add' product.id -%}">
+      <form method="post" action="{% url 'shop:cart_add' product.id %}">
         {% csrf_token %}
         <button type="submit" class="btn btn-primary">Добавить в корзину</button>
       </form>
-      <a href="{%- url 'shop:catalog' -%}" class="btn btn-light">Вернуться в каталог</a>
+      <a href="{% url 'shop:catalog' %}" class="btn btn-light">Вернуться в каталог</a>
     </div>
   </div>
   <div class="col-lg-4">
