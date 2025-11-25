@@ -1,0 +1,124 @@
+:root {
+  --brand-primary: #d62828;
+  --brand-secondary: #f77f00;
+  --brand-accent: #2a9d8f;
+  --brand-dark: #1d3557;
+  --brand-light: #f8f9fa;
+}
+
+body {
+  background: linear-gradient(180deg, #fdfdfd 0%, #f3f6fb 100%);
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #1f2d3d;
+  padding-top: 72px;
+}
+
+.navbar {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  color: var(--brand-primary);
+}
+
+.nav-link {
+  font-weight: 500;
+  color: #324a5f;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  color: var(--brand-primary);
+}
+
+.btn-primary {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #b71d1d;
+  border-color: #b71d1d;
+}
+
+.btn-outline-primary {
+  color: var(--brand-primary);
+  border-color: var(--brand-primary);
+}
+
+.card {
+  border: none;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+}
+
+.card-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #eef2f7;
+  font-weight: 600;
+}
+
+footer {
+  background-color: var(--brand-dark);
+  color: #dce6f2;
+  font-size: 0.9rem;
+  padding: 16px 0;
+  margin-top: 48px;
+}
+
+.hero {
+  background: linear-gradient(135deg, rgba(214, 40, 40, 0.1), rgba(42, 157, 143, 0.15));
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.badge-accent {
+  background-color: var(--brand-accent);
+}
+
+.product-card .price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+}
+
+.product-card .old-price {
+  text-decoration: line-through;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.form-control,
+.form-select {
+  border-radius: 10px;
+  border-color: #dfe7f3;
+}
+
+.table thead th {
+  background-color: #f1f5fb;
+  border-bottom: 2px solid #e5ecf6;
+}
+
+@media (max-width: 991px) {
+  .navbar-collapse {
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  }
+}
+
+@media (max-width: 767px) {
+  body {
+    padding-top: 64px;
+  }
+
+  .product-card {
+    margin-bottom: 12px;
+  }
+}

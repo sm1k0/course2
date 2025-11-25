@@ -1,0 +1,13 @@
+{% extends 'shop/base.html' %}
+{% block title %}Заказ оформлен · Ашан{% endblock %}
+
+{% block content %}
+<div class="card text-center">
+  <div class="card-body">
+    <h3 class="card-title">Спасибо за заказ!</h3>
+    <p class="card-text">Номер вашего заказа: <strong>#{{ order.id }}</strong></p>
+    <a href="{%- url 'shop:profile' -%}" class="btn btn-primary">Мои заказы</a>
+    <a href="{%- url 'shop:catalog' -%}" class="btn btn-link">Вернуться в каталог</a>
+  </div>
+</div>
+{% endblock %}

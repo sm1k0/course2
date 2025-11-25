@@ -1,0 +1,38 @@
+{% extends 'shop/base.html' %}
+{% block title %}{{ product.name }} · Ашан{% endblock %}
+
+{% block content %}
+<div class="row g-4 align-items-center">
+  <div class="col-lg-8">
+    <h3 class="mb-2">{{ product.name }}</h3>
+    <div class="text-muted mb-3">Категория: {{ product.category.name }}</div>
+    <p class="lead">Цена: {{ product.final_price }} ₽</p>
+    {% if product.discount_percent %}
+      <span class="badge bg-warning text-dark">Скидка {{ product.discount_percent }}%</span>
+    {% endif %}
+    <div class="mt-4 d-flex gap-2">
+      <form method="post" action="{%- url 'shop:cart_add' product.id -%}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Добавить в корзину</button>
+      </form>
+      <a href="{%- url 'shop:catalog' -%}" class="btn btn-light">Вернуться в каталог</a>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">Информация</div>
+      <div class="card-body">
+        <div class="mb-2">Артикул: {{ product.sku }}</div>
+        <div class="mb-2">Поставщик: {{ product.supplier.name }}</div>
+        <div class="mb-2">Доступность:
+          {% if product.stock %}
+            {% if product.stock.quantity > 0 %}В наличии{% else %}Нет на складе{% endif %}
+          {% else %}
+            Нет данных
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

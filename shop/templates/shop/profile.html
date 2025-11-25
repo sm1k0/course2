@@ -1,0 +1,52 @@
+{% extends 'shop/base.html' %}
+{% block title %}Личный кабинет · Ашан{% endblock %}
+
+{% block content %}
+<h3 class="mb-3">Личный кабинет</h3>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">Профиль</div>
+      <div class="card-body">
+        <p class="mb-1"><strong>Имя:</strong> {{ profile.full_name }}</p>
+        <p class="mb-1"><strong>Телефон:</strong> {{ profile.phone }}</p>
+        <p class="mb-1"><strong>Email:</strong> {{ request.user.email }}</p>
+        <p class="mb-0"><strong>Адрес:</strong> {{ profile.default_address }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">Мои заказы</div>
+      <div class="card-body">
+        {% if orders %}
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Статус</th>
+                  <th>Сумма</th>
+                  <th>Создан</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for order in orders %}
+                <tr>
+                  <td>{{ order.id }}</td>
+                  <td>{{ order.get_status_display }}</td>
+                  <td>{{ order.total_amount }} ₽</td>
+                  <td>{{ order.created_at|date:'d.m.Y H:i' }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info mb-0">У вас пока нет заказов.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
