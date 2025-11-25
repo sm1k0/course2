@@ -1,6 +1,7 @@
 from decimal import Decimal
 import csv
 import io
+from types import SimpleNamespace
 
 from django.contrib import messages
 from django.contrib.auth import login, logout
@@ -8,6 +9,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import models
 from django.db.models import F, Value
 from django.db.models.functions import Coalesce
+from django.core.paginator import Paginator
 from accounts.models import UserSettings
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -68,8 +70,16 @@ def _cart_items(cart):
 # ====== Вьюхи магазина ======
 
 def catalog_view(request):
+    settings_obj = None
     category_id = request.GET.get('category')
     search = request.GET.get('q')
+
+    if request.user.is_authenticated:
+        settings_obj, _ = UserSettings.objects.get_or_create(user=request.user)
+        # если пользователь пришёл без GET-параметров – применяем сохранённые фильтры
+        if not request.GET and settings_obj.saved_filters:
+            category_id = settings_obj.saved_filters.get('category')
+            search = settings_obj.saved_filters.get('q')
 
     categories = Category.objects.all()
     products = Product.objects.filter(is_active=True).select_related('category', 'supplier')
@@ -79,16 +89,46 @@ def catalog_view(request):
     if search:
         products = products.filter(name__icontains=search)
 
+    # сохраняем фильтры пользователя
+    if request.user.is_authenticated and request.GET:
+        settings_obj.saved_filters = {
+            'category': category_id or '',
+            'q': search or '',
+        }
+        settings_obj.save(update_fields=['saved_filters'])
+
+    # пагинация с учётом пользовательского page_size
+    default_page_size = 12
+    page_size = default_page_size
+    if request.user.is_authenticated:
+        page_size = int(settings_obj.page_size or default_page_size)
+    page_size = max(5, min(page_size, 100))
+
+    paginator = Paginator(products, page_size)
+    page_number = request.GET.get('page') or 1
+    if paginator.count:
+        page_obj = paginator.get_page(page_number)
+    else:
+        page_obj = SimpleNamespace(
+            number=1,
+            paginator=SimpleNamespace(num_pages=1),
+            object_list=[],
+            has_previous=False,
+            has_next=False,
+        )
+
     cart = _get_cart(request)
     cart_items, cart_total = _cart_items(cart)
 
     context = {
         'categories': categories,
-        'products': products,
+        'page_obj': page_obj,
+        'products': page_obj.object_list,
         'current_category_id': int(category_id) if category_id else None,
         'search_query': search or '',
         'cart_total': cart_total,
         'cart_count': sum(item['quantity'] for item in cart_items),
+        'page_size': page_size,
     }
     return render(request, 'shop/catalog.html', context)
 

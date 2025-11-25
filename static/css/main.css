@@ -1,12 +1,36 @@
 :root {
-  --brand-primary: #d62828;
-  --brand-secondary: #f77f00;
-  --brand-accent: #2a9d8f;
-  --brand-dark: #1d3557;
-  --brand-light: #f8f9fa;
+  --accent: #d62828;
+  --accent-2: #f77f00;
+  --accent-success: #2a9d8f;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --shadow-soft: 0 14px 42px rgba(10, 14, 28, 0.18);
+  --shadow-card: 0 10px 28px rgba(8, 12, 24, 0.14);
 }
 
-/* БАЗОВАЯ ВЁРСТКА И ФУТЕР ВНИЗУ */
+[data-theme="light"] {
+  --bg-body: linear-gradient(180deg, #f7f9fc 0%, #edf0f5 100%);
+  --bg-card: #ffffff;
+  --bg-surface: rgba(255, 255, 255, 0.86);
+  --bg-navbar: rgba(255, 255, 255, 0.92);
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  --border-subtle: #e5e7eb;
+  --input-bg: #f8fafc;
+}
+
+[data-theme="dark"] {
+  --bg-body: radial-gradient(circle at 10% 10%, rgba(214, 40, 40, 0.12), transparent 35%),
+              radial-gradient(circle at 90% 10%, rgba(42, 157, 143, 0.12), transparent 35%),
+              #05070d;
+  --bg-card: #0f172a;
+  --bg-surface: rgba(17, 24, 39, 0.75);
+  --bg-navbar: rgba(12, 16, 26, 0.85);
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border-subtle: #1f2937;
+  --input-bg: #0b1220;
+}
 
 html,
 body {
@@ -14,11 +38,11 @@ body {
 }
 
 body {
-  background: linear-gradient(180deg, #fdfdfd 0%, #f3f6fb 100%);
+  background: var(--bg-body);
   min-height: 100vh;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  color: #1f2d3d;
-  padding-top: 72px;
+  color: var(--text-main);
+  padding-top: 78px;
   display: flex;
   flex-direction: column;
 }
@@ -29,101 +53,132 @@ main {
 
 footer {
   flex-shrink: 0;
-  background-color: var(--brand-dark);
-  color: #dce6f2;
+  background: var(--bg-navbar);
+  color: var(--text-muted);
   font-size: 0.9rem;
   padding: 16px 0;
-  margin-top: 48px;
+  margin-top: 32px;
+  border-top: 1px solid var(--border-subtle);
 }
 
-/* НАВБАР */
-
-.navbar {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  background-color: #ffffff;
+/* NAVBAR */
+.app-navbar {
+  box-shadow: var(--shadow-card);
+  background: var(--bg-navbar);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .navbar-brand {
   font-weight: 700;
-  color: var(--brand-primary) !important;
+  color: var(--text-main) !important;
 }
 
-.navbar-brand span {
-  color: #111827;
+.navbar-brand::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin-right: 10px;
+  box-shadow: 0 0 0 6px rgba(214, 40, 40, 0.15);
 }
 
 .nav-link {
-  font-weight: 500;
-  color: #324a5f !important;
+  font-weight: 600;
+  color: var(--text-muted) !important;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .nav-link:hover,
 .nav-link:focus {
-  color: var(--brand-primary) !important;
+  color: var(--text-main) !important;
+  transform: translateY(-1px);
 }
 
-.navbar .btn-outline-danger,
-.navbar .btn-outline-primary {
+.navbar .btn {
   border-radius: 999px;
-  padding-inline: 18px;
-  font-weight: 500;
+  font-weight: 600;
 }
-
-/* КНОПКИ */
 
 .btn-primary,
 .btn-danger {
-  background-color: var(--brand-primary);
-  border-color: var(--brand-primary);
-  border-radius: 999px;
-  font-weight: 600;
-  padding-inline: 20px;
+  background: linear-gradient(135deg, var(--accent), #b71d1d);
+  border: none;
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(214, 40, 40, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-primary:hover,
-.btn-primary:focus,
 .btn-danger:hover,
+.btn-primary:focus,
 .btn-danger:focus {
-  background-color: #b71d1d;
-  border-color: #b71d1d;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(214, 40, 40, 0.35);
 }
 
 .btn-outline-primary {
-  color: var(--brand-primary);
-  border-color: var(--brand-primary);
-  border-radius: 999px;
-  font-weight: 600;
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
 }
 
 .btn-outline-primary:hover,
 .btn-outline-primary:focus {
-  background-color: rgba(214, 40, 40, 0.05);
+  color: var(--text-main);
+  border-color: var(--accent);
+  box-shadow: 0 12px 26px rgba(214, 40, 40, 0.15);
 }
 
-/* КАРТОЧКИ И ПАНЕЛИ */
+.btn-ghost {
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+}
 
+.btn-ghost:hover {
+  background: var(--bg-card);
+}
+
+/* FORMS */
+.form-control,
+.form-select {
+  background: var(--input-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  border-radius: var(--radius-md);
+}
+
+.form-control:focus,
+.form-select:focus {
+  box-shadow: 0 0 0 2px rgba(214, 40, 40, 0.25);
+  border-color: var(--accent);
+}
+
+/* CARDS */
 .card {
-  border: none;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-lg);
 }
 
 .card-header {
-  background-color: #ffffff;
-  border-bottom: 1px solid #eef2f7;
+  background: transparent;
+  border-bottom: 1px solid var(--border-subtle);
   font-weight: 600;
 }
 
-/* HERO БЛОК В КАТАЛОГЕ */
-
+/* HERO */
 .hero {
-  background: radial-gradient(circle at top left, rgba(214, 40, 40, 0.12), transparent 55%),
-              radial-gradient(circle at bottom right, rgba(42, 157, 143, 0.12), transparent 55%),
-              #ffffff;
-  border-radius: 18px;
-  padding: 28px 28px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: calc(var(--radius-lg) + 4px);
+  padding: 28px;
   margin: 24px 0;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-soft);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -139,63 +194,48 @@ footer {
 
 .hero-title {
   font-size: 1.9rem;
-  font-weight: 700;
-  color: #111827;
+  font-weight: 800;
   margin-bottom: 4px;
 }
 
 .hero-subtitle {
   margin: 0;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 .hero-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(247, 127, 0, 0.14);
+  color: var(--text-main);
   border-radius: 999px;
-  padding: 4px 12px;
+  padding: 6px 12px;
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .hero-actions .btn {
   min-width: 190px;
 }
 
-/* ПАНЕЛЬ ФИЛЬТРОВ */
-
+/* FILTERS */
 .filters-panel {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 18px 18px;
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.05);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  box-shadow: var(--shadow-card);
   margin-bottom: 20px;
+  border: 1px solid var(--border-subtle);
 }
 
 .filters-panel .form-label {
   font-size: 0.9rem;
-  font-weight: 600;
-  color: #4b5563;
+  font-weight: 700;
+  color: var(--text-muted);
 }
 
-.form-control,
-.form-select {
-  border-radius: 10px;
-  border-color: #dfe7f3;
-  font-size: 0.95rem;
-}
-
-.form-control:focus,
-.form-select:focus {
-  border-color: var(--brand-primary);
-  box-shadow: 0 0 0 1px rgba(214, 40, 40, 0.15);
-}
-
-/* СЕТКА ТОВАРОВ */
-
+/* PRODUCT GRID */
 .product-grid {
   margin-top: 8px;
 }
@@ -204,6 +244,7 @@ footer {
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .product-card .card-body {
@@ -215,8 +256,8 @@ footer {
 .product-thumb {
   position: relative;
   overflow: hidden;
-  border-radius: 14px 14px 0 0;
-  background: #f9fafb;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--input-bg);
 }
 
 .product-thumb img {
@@ -234,66 +275,82 @@ footer {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #94a3b8;
-  font-weight: 600;
+  color: var(--text-muted);
+  font-weight: 700;
 }
 
 .product-title {
   font-size: 1rem;
-  font-weight: 600;
-  color: #111827;
+  font-weight: 700;
 }
 
 .product-meta {
-  font-size: 0.85rem;
-  color: #6b7280;
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }
 
 .product-card .price {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--brand-primary);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--accent);
 }
 
 .product-card .old-price {
   text-decoration: line-through;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.9rem;
 }
 
 .product-card .card-footer {
   background-color: transparent;
-  border-top: 1px solid #eef2f7;
+  border-top: 1px solid var(--border-subtle);
 }
 
-/* ПУСТОЙ СОСТОЯНИЕ КАТАЛОГА */
-
+/* EMPTY STATE */
 .catalog-empty {
-  background: #e0f2fe;
-  border-radius: 10px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
   padding: 14px 18px;
-  color: #0f172a;
+  color: var(--text-main);
   font-size: 0.95rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   margin-top: 12px;
+  border: 1px solid var(--border-subtle);
 }
 
-/* ТАБЛИЦЫ (история заказов, отчёты и т.п.) */
-
+/* TABLES */
 .table thead th {
-  background-color: #f1f5fb;
-  border-bottom: 2px solid #e5ecf6;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-bottom: 2px solid var(--border-subtle);
+  color: var(--text-muted);
 }
 
 .table tbody tr:hover {
-  background-color: #f9fafb;
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.table,
+.table td,
+.table th {
+  color: var(--text-main);
+  border-color: var(--border-subtle);
+}
+
+.pagination .page-link {
+  background: var(--bg-card);
+  border-color: var(--border-subtle);
+  color: var(--text-main);
+}
+
+.pagination .page-item.active .page-link {
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 /* FOOTER */
-
 .footer-inner {
   display: flex;
   align-items: center;
@@ -306,14 +363,21 @@ footer {
   opacity: 0.9;
 }
 
-/* ADAPTIVE */
+/* SETTINGS CARD */
+.settings-card {
+  max-width: 720px;
+  margin: 0 auto;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+}
 
+/* RESPONSIVE */
 @media (max-width: 991px) {
   .navbar-collapse {
-    background: #ffffff;
+    background: var(--bg-card);
     padding: 12px;
     border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-soft);
   }
 
   .hero {

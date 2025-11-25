@@ -36,7 +36,7 @@
             {% for category in categories %}
               <option
                 value="{{ category.id }}"
-                {% if category.id|stringformat:"s" == request.GET.category %}selected{% endif %}
+                {% if category.id == current_category_id %}selected{% endif %}
               >
                 {{ category.name }}
               </option>
@@ -50,7 +50,7 @@
             type="text"
             name="q"
             class="form-control"
-            value="{{ request.GET.q }}"
+            value="{{ search_query }}"
             placeholder="Название или описание"
           >
         </div>
@@ -116,6 +116,31 @@
             </div>
           </div>
         {% endfor %}
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-4 flex-wrap gap-2">
+        <div class="text-muted small">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }} · {{ page_size }} на страницу</div>
+        <nav aria-label="Постраничная навигация">
+          <ul class="pagination mb-0">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&category={{ current_category_id|default:'' }}&q={{ search_query }}">Предыдущая</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled"><span class="page-link">Предыдущая</span></li>
+            {% endif %}
+
+            <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}&category={{ current_category_id|default:'' }}&q={{ search_query }}">Следующая</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled"><span class="page-link">Следующая</span></li>
+            {% endif %}
+          </ul>
+        </nav>
       </div>
     </section>
   {% else %}

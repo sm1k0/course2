@@ -13,7 +13,8 @@
 </head>
 
 <body class="d-flex flex-column min-vh-100"
-      data-user-role="{{ request.user.role.code|default_if_none:'' }}">
+      data-user-role="{{ request.user.role.code|default_if_none:'' }}"
+      data-theme="{{ user_settings.theme|default:'light' }}">
 
   {# единый header #}
   {% include 'partials/header.html' %}

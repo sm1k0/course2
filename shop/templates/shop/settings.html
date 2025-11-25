@@ -2,20 +2,36 @@
 {% block title %}Настройки пользователя · Ашан{% endblock %}
 
 {% block content %}
-<h3 class="mb-3">Настройки пользователя</h3>
+<div class="settings-card card p-4 mt-3">
+  <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+    <div>
+      <p class="text-uppercase text-muted mb-1 small">Персонализация</p>
+      <h3 class="mb-1">Настройки интерфейса</h3>
+      <p class="mb-0 text-muted">Тема, язык, формат дат и размер страниц каталога.</p>
+    </div>
+  </div>
 
-<form method="post" class="card p-3">
-  {% csrf_token %}
-  {{ form.non_field_errors }}
-  {% for field in form %}
-    <div class="mb-3">
-      <label class="form-label">{{ field.label }}</label>
-      {{ field }}
-      {% for error in field.errors %}
-        <div class="text-danger small">{{ error }}</div>
+  <form method="post" class="mt-2">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="row g-3">
+      {% for field in form %}
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+            <div class="form-text">{{ field.help_text }}</div>
+          {% endif %}
+          {% for error in field.errors %}
+            <div class="text-danger small">{{ error }}</div>
+          {% endfor %}
+        </div>
       {% endfor %}
     </div>
-  {% endfor %}
-  <button type="submit" class="btn btn-primary">Сохранить</button>
-</form>
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+      <a href="{% url 'shop:catalog' %}" class="btn btn-ghost">Вернуться в каталог</a>
+    </div>
+  </form>
+</div>
 {% endblock %}
