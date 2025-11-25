@@ -158,6 +158,11 @@ class UserSettings(models.Model):
         default=PageSize.MEDIUM,
         verbose_name='Размер страницы',
     )
+    saved_filters = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name='Сохранённые фильтры',
+    )
 
     def __str__(self) -> str:
         return f'Настройки {self.user.username}'
