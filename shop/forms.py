@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth import get_user_model, authenticate
 
 from accounts.models import CustomerProfile, Role, UserSettings
+from catalog.models import Category, Supplier, Product, Stock
+from orders.models import Order
 
 User = get_user_model()
 
@@ -103,8 +105,102 @@ class UserSettingsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for name, field in self.fields.items():
-            field.widget.attrs.setdefault('class', 'form-select' if name in {'theme', 'language', 'date_format', 'page_size'} else 'form-control')
+            field.widget.attrs.setdefault(
+                'class',
+                'form-select' if name in {'theme', 'language', 'date_format', 'page_size'} else 'form-control',
+            )
 
     class Meta:
         model = UserSettings
         fields = ['theme', 'language', 'date_format', 'page_size']
+
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['name', 'slug', 'description', 'image']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.setdefault('class', 'form-control')
+
+
+class SupplierForm(forms.ModelForm):
+    class Meta:
+        model = Supplier
+        fields = ['name', 'contact_email', 'phone', 'address', 'is_active']
+        widgets = {
+            'address': forms.Textarea(attrs={'rows': 2}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            css = 'form-check-input' if isinstance(field.widget, forms.CheckboxInput) else 'form-control'
+            field.widget.attrs.setdefault('class', css)
+
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = [
+            'name', 'sku', 'category', 'supplier', 'description', 'price', 'discount_percent', 'image', 'is_active'
+        ]
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            css = 'form-check-input' if isinstance(field.widget, forms.CheckboxInput) else 'form-control'
+            field.widget.attrs.setdefault('class', css)
+
+
+class StockForm(forms.ModelForm):
+    class Meta:
+        model = Stock
+        fields = ['quantity', 'warehouse_location']
+        widgets = {
+            'warehouse_location': forms.TextInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.setdefault('class', 'form-control')
+
+    def clean_quantity(self):
+        quantity = self.cleaned_data['quantity']
+        if quantity < 0:
+            raise forms.ValidationError('Количество не может быть меньше нуля.')
+        return quantity
+
+
+class OrderStatusForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['status']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['status'].widget.attrs.setdefault('class', 'form-select')
+
+
+class UserRoleForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['role', 'is_blocked']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['role'].queryset = Role.objects.all()
+        for name, field in self.fields.items():
+            css = 'form-check-input' if isinstance(field.widget, forms.CheckboxInput) else 'form-select'
+            if not isinstance(field.widget, forms.CheckboxInput):
+                css = 'form-select'
+            field.widget.attrs.setdefault('class', css)

@@ -1,0 +1,63 @@
+{% extends 'shop/management/base.html' %}
+{% load format_date %}
+{% block management_content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <div>
+    <h2 class="h4 mb-1">Заказ #{{ order.id }}</h2>
+    <p class="text-muted mb-0">{{ order.customer.full_name }} · {{ order.created_at|format_date }}</p>
+  </div>
+  <a class="btn btn-outline-primary" href="{% url 'shop:management_orders' %}">Назад</a>
+</div>
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">Информация</div>
+      <div class="card-body">
+        <p class="mb-1"><strong>Статус:</strong> {{ order.get_status_display }}</p>
+        <p class="mb-1"><strong>Сумма:</strong> {{ order.total_amount }} ₽</p>
+        <p class="mb-1"><strong>Адрес:</strong> {{ order.delivery_address }}</p>
+        <p class="mb-0"><strong>Комментарий:</strong> {{ order.comment|default:'—' }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">Изменить статус</div>
+      <div class="card-body">
+        <form method="post" action="{% url 'shop:management_order_status' order.id %}">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-primary" type="submit">Обновить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card mt-4">
+  <div class="card-header">Состав</div>
+  <div class="table-responsive admin-table mb-0">
+    <table class="table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Товар</th>
+          <th>Кол-во</th>
+          <th>Цена</th>
+          <th>Сумма</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in order.items.all %}
+        <tr>
+          <td>{{ item.product.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.unit_price }} ₽</td>
+          <td>{{ item.line_total }} ₽</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

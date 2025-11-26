@@ -1,0 +1,21 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}Админ-панель | Ашан OMS{% endblock %}
+{% block content %}
+<div class="management-wrapper">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h1 class="h3 mb-1">Административная панель</h1>
+      <p class="text-muted mb-0">Внутренний контроль и управление системой</p>
+    </div>
+    <div class="btn-group">
+      <a class="btn btn-outline-primary" href="{% url 'shop:management_dashboard' %}">Дашборд</a>
+      <a class="btn btn-outline-primary" href="{% url 'shop:management_products' %}">Каталог</a>
+      <a class="btn btn-outline-primary" href="{% url 'shop:management_orders' %}">Заказы</a>
+      <a class="btn btn-outline-primary" href="{% url 'shop:management_users' %}">Пользователи</a>
+    </div>
+  </div>
+
+  {% block management_content %}{% endblock %}
+</div>
+{% endblock %}

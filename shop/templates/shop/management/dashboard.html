@@ -1,0 +1,62 @@
+{% extends 'shop/management/base.html' %}
+{% block management_content %}
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card shadow-soft">
+      <div class="card-body">
+        <p class="text-muted text-uppercase small mb-1">Товары</p>
+        <div class="d-flex align-items-end justify-content-between">
+          <h3 class="mb-0">{{ products_count }}</h3>
+          <span class="badge bg-primary">Каталог</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-soft">
+      <div class="card-body">
+        <p class="text-muted text-uppercase small mb-1">Заказы</p>
+        <div class="d-flex align-items-end justify-content-between">
+          <h3 class="mb-0">{{ orders_count }}</h3>
+          <span class="badge bg-info">Операции</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-soft">
+      <div class="card-body">
+        <p class="text-muted text-uppercase small mb-1">Продажи за 7 дней</p>
+        <div class="d-flex align-items-end justify-content-between">
+          <h3 class="mb-0">{{ sales_last_week }} ₽</h3>
+          <span class="badge bg-success">Финансы</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mt-1">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">Быстрые ссылки</div>
+      <div class="list-group list-group-flush">
+        <a class="list-group-item list-group-item-action" href="{% url 'shop:management_products' %}">Товары</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'shop:management_categories' %}">Категории</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'shop:management_suppliers' %}">Поставщики</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'shop:management_stock' %}">Склад</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">Заказы и пользователи</div>
+      <div class="list-group list-group-flush">
+        <a class="list-group-item list-group-item-action" href="{% url 'shop:management_orders' %}">Заказы</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'shop:management_users' %}">Пользователи</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'shop:reports' %}">Отчёты</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

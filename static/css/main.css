@@ -387,3 +387,40 @@ footer {
 [data-theme="dark"] .catalog-empty {
   border-color: var(--border-subtle);
 }
+
+/* Управленческие таблицы и формы */
+.admin-table .table {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.admin-table table tr:nth-child(odd) {
+  background: color-mix(in srgb, var(--bg-card) 90%, #000 10%);
+}
+
+.admin-table table tr:hover {
+  background: var(--bg-surface);
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 700;
+}
+
+.form-styled input,
+.form-styled select,
+.form-styled textarea {
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+}
+
+.form-styled input:focus,
+.form-styled select:focus,
+.form-styled textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
