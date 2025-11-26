@@ -2,17 +2,19 @@
 {% block title %}Настройки пользователя · Ашан{% endblock %}
 
 {% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="h3">Настройки интерфейса</h1>
+    <p class="muted-label">Тема, язык, формат дат и размер страниц сохраняются для вашего аккаунта.</p>
+  </div>
+  <span class="badge badge-soft">Профиль</span>
+</div>
+
 <div class="row justify-content-center">
   <div class="col-lg-8">
     <div class="card shadow-soft settings-card">
-      <div class="card-header d-flex align-items-center justify-content-between">
-        <div>
-          <h5 class="mb-1">Настройки интерфейса</h5>
-          <p class="text-muted mb-0 small">Тема, язык, формат дат и размер страниц сохраняются для вашего аккаунта.</p>
-        </div>
-      </div>
       <div class="card-body">
-        <form method="post" class="row g-3">
+        <form method="post" class="row g-3 form-styled">
           {% csrf_token %}
           {{ form.non_field_errors }}
           {% for field in form %}

@@ -1,7 +1,8 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+{% load rbac_tags %}
+<nav class="navbar navbar-expand-lg shadow-sm fixed-top">
   <div class="container">
-    <a class="navbar-brand fw-semibold text-danger" href="{% url 'shop:catalog' %}">
-      Ашан OMS
+    <a class="navbar-brand" href="{% url 'shop:catalog' %}">
+      Ашан <span>OMS</span>
     </a>
 
     <button class="navbar-toggler" type="button"
@@ -10,7 +11,7 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-2">
         <li class="nav-item">
           <a class="nav-link" href="{% url 'shop:catalog' %}">Каталог</a>
         </li>
@@ -23,38 +24,34 @@
           <a class="nav-link" href="{% url 'shop:settings' %}">Настройки</a>
         </li>
 
-        {# ADMIN / MANAGER – пункт отчётов #}
-        {% if request.user.is_authenticated and request.user.role %}
-          {% if request.user.role.code == 'ADMIN' or request.user.role.code == 'MANAGER' %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'shop:reports' %}">Отчёты</a>
-            </li>
-          {% endif %}
+        {% if request.user|is_admin or request.user|is_manager %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'shop:reports' %}">Отчёты</a>
+          </li>
         {% endif %}
       </ul>
 
       <ul class="navbar-nav align-items-center gap-2">
         <li class="nav-item">
-          <a class="btn btn-outline-danger" href="{% url 'shop:cart' %}">
+          <a class="btn btn-outline-primary" href="{% url 'shop:cart' %}">
             Корзина
           </a>
         </li>
 
         {% if request.user.is_authenticated %}
-          <li class="nav-item">
-            <span class="navbar-text me-1">
-              {{ request.user.username }}
-            </span>
+          <li class="nav-item d-flex align-items-center text-muted small">
+            <span class="avatar-initial me-2">{{ request.user.username|first }}</span>
+            <span class="fw-semibold">{{ request.user.username }}</span>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-danger" href="{% url 'accounts:logout' %}">Выход</a>
+            <a class="btn btn-outline-secondary" href="{% url 'accounts:logout' %}">Выход</a>
           </li>
         {% else %}
           <li class="nav-item">
-            <a class="btn btn-light" href="{% url 'accounts:login' %}">Войти</a>
+            <a class="btn btn-outline-secondary" href="{% url 'accounts:login' %}">Войти</a>
           </li>
           <li class="nav-item">
-            <a class="btn btn-danger" href="{% url 'accounts:register' %}">
+            <a class="btn btn-primary" href="{% url 'accounts:register' %}">
               Регистрация
             </a>
           </li>

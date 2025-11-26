@@ -2,13 +2,21 @@
 {% block title %}Оформление заказа · Ашан{% endblock %}
 
 {% block content %}
-<h3 class="mb-3">Оформление заказа</h3>
+<div class="page-header">
+  <div>
+    <h1 class="h3">Оформление заказа</h1>
+    <p class="muted-label">Укажите адрес доставки и подтвердите заказ.</p>
+  </div>
+  <span class="badge badge-soft">Шаг 2 · Подтверждение</span>
+</div>
+
 {% if items %}
 <div class="row g-4">
   <div class="col-lg-7">
     <div class="card">
       <div class="card-body">
-        <form method="post">
+        <h5 class="card-title mb-3">Данные доставки</h5>
+        <form method="post" class="form-styled">
           {% csrf_token %}
           <div class="mb-3">
             <label class="form-label">Адрес доставки</label>
@@ -16,9 +24,12 @@
           </div>
           <div class="mb-3">
             <label class="form-label">Комментарий</label>
-            <textarea name="comment" class="form-control" rows="2"></textarea>
+            <textarea name="comment" class="form-control" rows="2" placeholder="Например, подъезд, этаж, код домофона"></textarea>
           </div>
-          <button type="submit" class="btn btn-primary">Подтвердить заказ</button>
+          <div class="d-flex justify-content-between flex-wrap gap-2">
+            <a href="{% url 'shop:cart' %}" class="btn btn-outline-secondary">Вернуться в корзину</a>
+            <button type="submit" class="btn btn-primary">Подтвердить заказ</button>
+          </div>
         </form>
       </div>
     </div>
@@ -38,7 +49,7 @@
           </li>
           {% endfor %}
         </ul>
-        <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="d-flex justify-content-between align-items-center mt-3 pt-1">
           <span class="fw-semibold">Итого</span>
           <span class="fs-5 fw-bold">{{ total }} ₽</span>
         </div>
@@ -47,6 +58,10 @@
   </div>
 </div>
 {% else %}
-  <div class="alert alert-info">Корзина пуста.</div>
+  <div class="empty-state">
+    <div class="fw-semibold mb-2">Корзина пуста.</div>
+    <p class="text-muted mb-3">Добавьте товары в корзину, чтобы оформить заказ.</p>
+    <a class="btn btn-primary" href="{% url 'shop:catalog' %}">Вернуться в каталог</a>
+  </div>
 {% endif %}
 {% endblock %}
