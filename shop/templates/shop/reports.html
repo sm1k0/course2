@@ -2,157 +2,373 @@
 {% block title %}Аналитика · Ашан{% endblock %}
 
 {% block content %}
-<h3 class="mb-3">Аналитика и отчёты</h3>
+<div class="page-header">
+  <div>
+    <h1 class="h3">Аналитика и отчёты</h1>
+    <p class="muted-label">Продажи и складские остатки в едином стиле с поддержкой экспорта.</p>
+  </div>
+  <span class="badge badge-soft">Отчёты</span>
+</div>
 
 <div class="row g-4">
-  <div class="col-md-6">
-    <div class="card">
-      <div class="card-header">Продажи по дням</div>
+  <div class="col-lg-6">
+    <div class="card chart-card h-100">
+      <div class="card-header d-flex justify-content-between align-items-start gap-2 flex-wrap">
+        <div>
+          <div class="card-title h6 mb-1">Продажи по дням</div>
+          <div class="card-subtitle small">Динамика завершённых заказов.</div>
+        </div>
+        <div class="report-actions">
+          <button class="btn btn-outline-primary btn-sm" data-export-csv="sales-daily">Экспорт CSV</button>
+          <button class="btn btn-outline-primary btn-sm" data-export-png="sales-daily">Экспорт PNG</button>
+        </div>
+      </div>
       <div class="card-body">
-        <canvas id="salesDailyChart" height="200"></canvas>
+        <canvas id="salesDailyChart" height="220"></canvas>
+        <div class="table-responsive mt-3">
+          <table class="table table-sm align-middle" id="salesDailyTable">
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th class="text-end">Сумма продаж</th>
+                <th class="text-end">Заказы</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
-  <div class="col-md-6">
-    <div class="card">
-      <div class="card-header">Продажи по категориям</div>
+
+  <div class="col-lg-6">
+    <div class="card chart-card h-100">
+      <div class="card-header d-flex justify-content-between align-items-start gap-2 flex-wrap">
+        <div>
+          <div class="card-title h6 mb-1">Продажи по категориям</div>
+          <div class="card-subtitle small">Структура выручки по категориям.</div>
+        </div>
+        <div class="report-actions">
+          <button class="btn btn-outline-primary btn-sm" data-export-csv="sales-category">Экспорт CSV</button>
+          <button class="btn btn-outline-primary btn-sm" data-export-png="sales-category">Экспорт PNG</button>
+        </div>
+      </div>
       <div class="card-body">
-        <canvas id="salesByCategoryChart" height="200"></canvas>
+        <canvas id="salesByCategoryChart" height="220"></canvas>
+        <div class="table-responsive mt-3">
+          <table class="table table-sm align-middle" id="salesCategoryTable">
+            <thead>
+              <tr>
+                <th>Категория</th>
+                <th class="text-end">Сумма продаж</th>
+                <th class="text-end">Кол-во единиц</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-header">Остатки на складе</div>
+
+  <div class="col-12">
+    <div class="card chart-card">
+      <div class="card-header d-flex justify-content-between align-items-start gap-2 flex-wrap">
+        <div>
+          <div class="card-title h6 mb-1">Остатки на складе</div>
+          <div class="card-subtitle small">Актуальные остатки по SKU.</div>
+        </div>
+        <div class="report-actions">
+          <button class="btn btn-outline-primary btn-sm" data-export-csv="stock">Экспорт CSV</button>
+          <button class="btn btn-outline-primary btn-sm" data-export-png="stock">Экспорт PNG</button>
+        </div>
+      </div>
       <div class="card-body">
-        <canvas id="stockChart" height="200"></canvas>
+        <canvas id="stockChart" height="240"></canvas>
+        <div class="table-responsive mt-3">
+          <table class="table table-sm align-middle" id="stockTable">
+            <thead>
+              <tr>
+                <th>Товар</th>
+                <th>Категория</th>
+                <th>SKU</th>
+                <th class="text-end">Остаток</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="mt-4 d-flex gap-2">
-  <a href="{% url 'shop:export_sales_daily_csv' %}" class="btn btn-outline-primary btn-sm">
-    Экспорт продаж по дням (CSV)
+<div class="mt-4 d-flex gap-2 flex-wrap">
+  <a href="{% url 'shop:export_sales_daily_csv' %}" class="btn btn-outline-primary btn-icon">
+    <span>Экспорт продаж по дням (CSV)</span>
   </a>
-  <a href="{% url 'shop:export_products_csv' %}" class="btn btn-outline-secondary btn-sm">
-    Экспорт товаров (CSV)
+  <a href="{% url 'shop:export_products_csv' %}" class="btn btn-outline-secondary btn-icon">
+    <span>Экспорт товаров (CSV)</span>
   </a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', async () => {
-  const salesDailyUrl = "{{ sales_daily_url }}";
-  const salesByCategoryUrl = "{{ sales_by_category_url }}";
-  const stockUrl = "{{ stock_url }}";
+  document.addEventListener('DOMContentLoaded', async () => {
+    const salesDailyUrl = "{{ sales_daily_url }}";
+    const salesByCategoryUrl = "{{ sales_by_category_url }}";
+    const stockUrl = "{{ stock_url }}";
 
-  const fetchJson = async (url) => {
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error(`Не удалось загрузить ${url}: ${res.status}`);
+    const charts = {};
+    const datasets = {
+      salesDaily: [],
+      salesCategory: [],
+      stock: [],
+    };
+
+    const css = getComputedStyle(document.body);
+    const colors = {
+      text: css.getPropertyValue('--text-main').trim() || '#f7f9ff',
+      muted: css.getPropertyValue('--text-muted').trim() || '#a5adcb',
+      grid: css.getPropertyValue('--border-subtle').trim() || '#24283b',
+      card: css.getPropertyValue('--bg-card').trim() || '#11121a',
+      accent: css.getPropertyValue('--accent').trim() || '#ef4444',
+    };
+
+    const fetchJson = async (url) => {
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`Не удалось загрузить ${url}: ${res.status}`);
+      }
+      return res.json();
+    };
+
+    const downloadCsv = (rows, headers, filename) => {
+      if (!rows || !rows.length) return;
+      const headerRow = headers.join(',');
+      const csvRows = rows.map((row) => row.map((val) => `"${String(val ?? '').replace(/"/g, '""')}"`).join(','));
+      const blob = new Blob([headerRow + '\n' + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    };
+
+    const downloadPng = (key, filename) => {
+      const chart = charts[key];
+      if (!chart) return;
+      const link = document.createElement('a');
+      link.href = chart.toBase64Image();
+      link.download = filename;
+      link.click();
+    };
+
+    const renderEmptyRow = (tableId, colspan) => {
+      const tbody = document.querySelector(`#${tableId} tbody`);
+      tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center text-muted">Нет данных</td></tr>`;
+    };
+
+    const renderSalesDaily = (data) => {
+      datasets.salesDaily = data || [];
+      const ctx = document.getElementById('salesDailyChart');
+      const labels = datasets.salesDaily.map((item) => item.date);
+      const totals = datasets.salesDaily.map((item) => item.total_amount);
+
+      charts['sales-daily'] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Сумма продаж',
+              data: totals,
+              fill: false,
+              borderColor: colors.accent,
+              backgroundColor: colors.accent,
+              tension: 0.25,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { labels: { color: colors.text } },
+            tooltip: {
+              backgroundColor: colors.card,
+              titleColor: colors.text,
+              bodyColor: colors.text,
+            },
+          },
+          scales: {
+            x: { ticks: { color: colors.muted }, grid: { color: colors.grid } },
+            y: { beginAtZero: true, ticks: { color: colors.muted }, grid: { color: colors.grid } },
+          },
+        },
+      });
+
+      const tbody = document.querySelector('#salesDailyTable tbody');
+      if (!datasets.salesDaily.length) {
+        renderEmptyRow('salesDailyTable', 3);
+        return;
+      }
+      tbody.innerHTML = datasets.salesDaily.map((item) => `
+        <tr>
+          <td>${item.date}</td>
+          <td class="text-end">${item.total_amount}</td>
+          <td class="text-end">${item.orders_count}</td>
+        </tr>
+      `).join('');
+    };
+
+    const renderSalesByCategory = (data) => {
+      datasets.salesCategory = data || [];
+      const ctx = document.getElementById('salesByCategoryChart');
+      const labels = datasets.salesCategory.map((item) => item.category_name);
+      const totals = datasets.salesCategory.map((item) => item.total_amount);
+
+      charts['sales-category'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Сумма продаж',
+              data: totals,
+              backgroundColor: colors.accent,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: colors.card,
+              titleColor: colors.text,
+              bodyColor: colors.text,
+            },
+          },
+          scales: {
+            x: { ticks: { color: colors.muted }, grid: { color: colors.grid } },
+            y: { beginAtZero: true, ticks: { color: colors.muted }, grid: { color: colors.grid } },
+          },
+        },
+      });
+
+      const tbody = document.querySelector('#salesCategoryTable tbody');
+      if (!datasets.salesCategory.length) {
+        renderEmptyRow('salesCategoryTable', 3);
+        return;
+      }
+      tbody.innerHTML = datasets.salesCategory.map((item) => `
+        <tr>
+          <td>${item.category_name}</td>
+          <td class="text-end">${item.total_amount}</td>
+          <td class="text-end">${item.total_quantity}</td>
+        </tr>
+      `).join('');
+    };
+
+    const renderStock = (data) => {
+      datasets.stock = data || [];
+      const ctx = document.getElementById('stockChart');
+      const labels = datasets.stock.map((item) => `${item.product_name} (${item.sku})`);
+      const quantities = datasets.stock.map((item) => item.quantity);
+
+      charts['stock'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Остаток',
+              data: quantities,
+              backgroundColor: colors.accent,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: colors.card,
+              titleColor: colors.text,
+              bodyColor: colors.text,
+            },
+          },
+          scales: {
+            x: { ticks: { color: colors.muted }, grid: { color: colors.grid, display: false } },
+            y: { beginAtZero: true, ticks: { color: colors.muted }, grid: { color: colors.grid } },
+          },
+        },
+      });
+
+      const tbody = document.querySelector('#stockTable tbody');
+      if (!datasets.stock.length) {
+        renderEmptyRow('stockTable', 4);
+        return;
+      }
+      tbody.innerHTML = datasets.stock.map((item) => `
+        <tr>
+          <td>${item.product_name}</td>
+          <td>${item.category_name}</td>
+          <td>${item.sku}</td>
+          <td class="text-end">${item.quantity}</td>
+        </tr>
+      `).join('');
+    };
+
+    try {
+      const [salesDaily, salesByCategory, stock] = await Promise.all([
+        fetchJson(salesDailyUrl),
+        fetchJson(salesByCategoryUrl),
+        fetchJson(stockUrl),
+      ]);
+
+      renderSalesDaily(salesDaily || []);
+      renderSalesByCategory(salesByCategory || []);
+      renderStock(stock || []);
+    } catch (err) {
+      console.error('Ошибка загрузки отчётов', err);
+      renderEmptyRow('salesDailyTable', 3);
+      renderEmptyRow('salesCategoryTable', 3);
+      renderEmptyRow('stockTable', 4);
     }
-    return res.json();
-  };
 
-  const renderSalesDaily = (data) => {
-    const ctx = document.getElementById('salesDailyChart');
-    const labels = data.map((item) => item.date);
-    const totals = data.map((item) => item.total_amount);
-
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'Сумма продаж',
-            data: totals,
-            fill: false,
-            borderColor: '#0d6efd',
-            tension: 0.2,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: true },
-        },
-      },
+    document.querySelectorAll('[data-export-csv]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.exportCsv;
+        if (key === 'sales-daily') {
+          downloadCsv(
+            datasets.salesDaily.map((row) => [row.date, row.total_amount, row.orders_count]),
+            ['date', 'total_amount', 'orders_count'],
+            `sales_daily_${new Date().toISOString().slice(0, 10)}.csv`
+          );
+        }
+        if (key === 'sales-category') {
+          downloadCsv(
+            datasets.salesCategory.map((row) => [row.category_name, row.total_amount, row.total_quantity]),
+            ['category', 'total_amount', 'total_quantity'],
+            `sales_by_category_${new Date().toISOString().slice(0, 10)}.csv`
+          );
+        }
+        if (key === 'stock') {
+          downloadCsv(
+            datasets.stock.map((row) => [row.product_name, row.category_name, row.sku, row.quantity]),
+            ['product', 'category', 'sku', 'quantity'],
+            `stock_${new Date().toISOString().slice(0, 10)}.csv`
+          );
+        }
+      });
     });
-  };
 
-  const renderSalesByCategory = (data) => {
-    const ctx = document.getElementById('salesByCategoryChart');
-    const labels = data.map((item) => item.category_name);
-    const totals = data.map((item) => item.total_amount);
-
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'Сумма продаж',
-            data: totals,
-            backgroundColor: '#198754',
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false },
-        },
-      },
+    document.querySelectorAll('[data-export-png]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.exportPng;
+        downloadPng(key, `${key}_${new Date().toISOString().slice(0, 10)}.png`);
+      });
     });
-  };
-
-  const renderStock = (data) => {
-    const ctx = document.getElementById('stockChart');
-    const labels = data.map((item) => `${item.product_name} (${item.sku})`);
-    const quantities = data.map((item) => item.quantity);
-
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'Остаток',
-            data: quantities,
-            backgroundColor: '#ffc107',
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
-    });
-  };
-
-  try {
-    const [salesDaily, salesByCategory, stock] = await Promise.all([
-      fetchJson(salesDailyUrl),
-      fetchJson(salesByCategoryUrl),
-      fetchJson(stockUrl),
-    ]);
-
-    renderSalesDaily(salesDaily || []);
-    renderSalesByCategory(salesByCategory || []);
-    renderStock(stock || []);
-  } catch (err) {
-    console.error('Ошибка загрузки отчётов', err);
-  }
-});
+  });
 </script>
 {% endblock %}

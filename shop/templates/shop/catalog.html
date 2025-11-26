@@ -108,10 +108,12 @@
                   {% endif %}
                 </div>
 
-                {# тут можно позже повесить добавление в корзину #}
-                <button type="button" class="btn btn-outline-primary btn-sm" disabled>
-                  В корзину
-                </button>
+                <form method="post" action="{% url 'shop:cart_add' product.id %}" class="mb-0">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-primary btn-sm">
+                    В корзину
+                  </button>
+                </form>
               </div>
             </div>
           </div>
