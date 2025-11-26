@@ -1,0 +1,47 @@
+{% extends 'shop/management/base.html' %}
+{% load static %}
+{% block management_content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <div>
+    <h2 class="h4 mb-1">Товары</h2>
+    <p class="text-muted mb-0">Управление каталогом</p>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-primary" href="{% url 'shop:management_products_import' %}">Импорт CSV</a>
+    <a class="btn btn-primary" href="{% url 'shop:management_product_create' %}">Создать</a>
+  </div>
+</div>
+<div class="table-responsive admin-table">
+  <table class="table align-middle">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Название</th>
+        <th>SKU</th>
+        <th>Категория</th>
+        <th>Цена</th>
+        <th>Склад</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+      <tr>
+        <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.sku }}</td>
+        <td>{{ product.category.name }}</td>
+        <td>{{ product.price }} ₽</td>
+        <td>{{ product.stock.quantity|default:0 }}</td>
+        <td class="text-end">
+          <a class="btn btn-sm btn-outline-primary" href="{% url 'shop:management_product_edit' product.id %}">✏️</a>
+          <a class="btn btn-sm btn-outline-danger" href="{% url 'shop:management_product_delete' product.id %}">🗑️</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center text-muted">Нет товаров</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'shop/management/base.html' %}
+{% block management_content %}
+<div class="card">
+  <div class="card-header">Удаление</div>
+  <div class="card-body">
+    <p class="mb-4">Вы уверены, что хотите удалить {{ type }} «{{ object }}»?</p>
+    <form method="post">
+      {% csrf_token %}
+      <a class="btn btn-outline-primary" href="{{ request.META.HTTP_REFERER|default:'/' }}">Отмена</a>
+      <button type="submit" class="btn btn-danger">Удалить</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
